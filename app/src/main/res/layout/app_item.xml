@@ -24,23 +24,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/app_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    tools:text="App name"
-                    android:text="@{viewModel.model.name}"/>
+                <ImageView
+                    android:id="@+id/app_icon"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/card_image_margin"
+                    android:layout_marginStart="@dimen/card_image_margin"
+                    android:layout_width="@dimen/card_image_size"
+                    android:layout_height="@dimen/card_image_size"
+                    android:src="@{viewModel.model.icon}"/>
 
-                <TextView
-                    android:id="@+id/app_package"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/black"
-                    android:layout_below="@id/app_name"
-                    tools:text="App package"
-                    android:layout_marginTop="@dimen/card_default_margin"
-                    android:text="@{viewModel.model.package}"/>
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/app_icon"
+                    android:layout_marginLeft="@dimen/card_image_margin"
+                    android:layout_marginStart="@dimen/card_image_margin"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/app_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_marginTop="@dimen/card_text_margin"
+                        android:textColor="@color/card_name_color"
+                        android:textStyle="bold"
+                        tools:text="App name"
+                        android:text="@{viewModel.model.name}"/>
+
+                    <TextView
+                        android:id="@+id/app_package"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/card_package_color"
+                        tools:text="App package"
+                        android:layout_marginTop="@dimen/card_text_margin"
+                        android:text="@{viewModel.model.package}"/>
+                </LinearLayout>
+
             </RelativeLayout>
 
 
