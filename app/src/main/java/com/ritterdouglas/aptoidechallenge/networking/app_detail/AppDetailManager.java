@@ -27,7 +27,7 @@ public class AppDetailManager {
         }
     }
 
-    public Observable<Response<DetailResponse>> listApps(int id) {
+    public Observable<Response<DetailResponse>> getAppDetail(int id) {
         return appDetailAPIService.getAppDetail(id);
     }
 
