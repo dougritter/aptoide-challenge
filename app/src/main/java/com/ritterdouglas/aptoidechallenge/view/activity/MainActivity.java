@@ -2,15 +2,20 @@ package com.ritterdouglas.aptoidechallenge.view.activity;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.ritterdouglas.aptoidechallenge.R;
+import com.ritterdouglas.aptoidechallenge.adapter.ListAppsAdapter;
 import com.ritterdouglas.aptoidechallenge.databinding.ActivityMainBinding;
-import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsAPIService;
 import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsManager;
+import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsResponse;
 import com.ritterdouglas.aptoidechallenge.view_model.MainActivityViewModel;
 
+import java.util.List;
+
+import retrofit2.Response;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,6 +32,8 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         mViewModel = new MainActivityViewModel(ListAppsManager.getInstance(this));
 
         mViewModel.listApps();
@@ -46,12 +53,12 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override protected void reconnectWithNetworkRequests() {
-        listAppsSubscription = mViewModel.createSearchSubject()
+        listAppsSubscription = mViewModel.createListAppsSubject()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new ListAppsSubscriber());
     }
 
-    private class ListAppsSubscriber extends Subscriber<Object> {
+    private class ListAppsSubscriber extends Subscriber<Response<ListAppsResponse>> {
         @Override public void onCompleted() {
             // hide progress
             Log.e(TAG, "onCompleted - load recyclerview");
@@ -68,8 +75,13 @@ public class MainActivity extends BaseActivity {
             // test if errors are instanceof exceptions of our API
         }
 
-        @Override public void onNext(Object o) {
+        @Override public void onNext(Response<ListAppsResponse> o) {
             Log.e(TAG, "onNext");
+
+            ListAppsResponse listAppsResponse = o.body();
+            List<com.ritterdouglas.aptoidechallenge.networking.list_apps.List> retrievedList = listAppsResponse.getResponses().getListApps().getDatasets().getAll().getData().getList();
+
+            mBinding.recyclerView.setAdapter(new ListAppsAdapter(retrievedList));
 
         }
     }

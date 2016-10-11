@@ -1,30 +1,31 @@
 package com.ritterdouglas.aptoidechallenge.view_model;
 
 import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsManager;
+import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsResponse;
 
+import retrofit2.Response;
 import rx.subjects.AsyncSubject;
 
 public class MainActivityViewModel {
 
-    private AsyncSubject<Object> listAppsSubject;
-    private ListAppsManager searchManager;
+    private AsyncSubject<Response<ListAppsResponse>> listAppsSubject;
+    private ListAppsManager listAppsManager;
 
     public MainActivityViewModel(ListAppsManager searchManager) {
-        this.searchManager = searchManager;
+        this.listAppsManager = searchManager;
         listAppsSubject = AsyncSubject.create();
     }
 
     public void listApps() {
-        searchManager.listApps()
+        listAppsManager.listApps()
                 .subscribe(listAppsSubject);
-
     }
 
-    public AsyncSubject<Object> getListAppsSubject() {
+    public AsyncSubject<Response<ListAppsResponse>> getListAppsSubject() {
         return this.listAppsSubject;
     }
 
-    public AsyncSubject<Object> createSearchSubject() {
+    public AsyncSubject<Response<ListAppsResponse>> createListAppsSubject() {
         this.listAppsSubject = AsyncSubject.create();
         return this.listAppsSubject;
     }

@@ -24,7 +24,6 @@ public class ListAppsManager {
             if (instance == null) {
                 instance = new ListAppsManager(context);
             }
-
             return instance;
         }
     }
