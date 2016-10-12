@@ -46,6 +46,7 @@ public class MainActivity extends BaseActivity {
     public void onItemClick(AppItemViewModel appItemViewModel) {
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(DetailsActivityViewModel.APP_ID, appItemViewModel.getModel().getId());
+        intent.putExtra(DetailsActivityViewModel.APP_NAME, appItemViewModel.getModel().getName());
         startActivity(intent);
     }
 

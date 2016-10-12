@@ -1,25 +1,16 @@
 package com.ritterdouglas.aptoidechallenge.view.activity;
 
 import android.databinding.DataBindingUtil;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.ritterdouglas.aptoidechallenge.R;
-import com.ritterdouglas.aptoidechallenge.adapter.ListAppsAdapter;
 import com.ritterdouglas.aptoidechallenge.adapter.SectionsPagerAdapter;
 import com.ritterdouglas.aptoidechallenge.databinding.ActivityDetailsBinding;
 import com.ritterdouglas.aptoidechallenge.networking.app_detail.AppDetailManager;
 import com.ritterdouglas.aptoidechallenge.networking.app_detail.DetailResponse;
-import com.ritterdouglas.aptoidechallenge.networking.app_detail.Meta;
-import com.ritterdouglas.aptoidechallenge.networking.app_detail.Versions;
-import com.ritterdouglas.aptoidechallenge.networking.list_apps.List;
-import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsResponse;
 import com.ritterdouglas.aptoidechallenge.view_model.DetailsActivityViewModel;
 import com.ritterdouglas.aptoidechallenge.view_model.FragmentDetailViewModel;
-import com.ritterdouglas.aptoidechallenge.view_model.custom_data.DetailsLeanData;
-
-import java.util.ArrayList;
 
 import retrofit2.Response;
 import rx.Subscriber;
@@ -40,6 +31,7 @@ public class DetailsActivity extends BaseActivity {
         mViewModel = new DetailsActivityViewModel(AppDetailManager.getInstance(this), getIntent());
 
         mViewModel.getAppDetail(mViewModel.getAppID());
+        getSupportActionBar().setTitle(mViewModel.getAppName());
 
     }
 
@@ -77,10 +69,15 @@ public class DetailsActivity extends BaseActivity {
             Log.e(TAG, "onNext");
 
             try {
-                java.util.List<FragmentDetailViewModel> dataset = getViewModelsDataset(response);
+                java.util.List<FragmentDetailViewModel> dataset = mViewModel.getViewModelsDataset(response);
 
                 if (dataset != null) {
                     mBinding.viewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(), dataset));
+                    mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
+
+                    for (int i=0; i<dataset.size(); i++) {
+                        mBinding.tabLayout.getTabAt(i).setText(dataset.get(i).getModel().getVersionName());
+                    }
 
                 }
 
@@ -90,34 +87,5 @@ public class DetailsActivity extends BaseActivity {
 
         }
 
-        private java.util.List<FragmentDetailViewModel> getViewModelsDataset(Response<DetailResponse> response) {
-            Meta meta = response.body().getNodes().getMeta();
-            Versions versions = response.body().getNodes().getVersions();
-
-            java.util.List<FragmentDetailViewModel> detailsDataset = new ArrayList<>();
-
-            DetailsLeanData firstObject = new DetailsLeanData();
-            firstObject.setIcon(meta.getData().getIcon());
-            firstObject.setName(meta.getData().getName());
-            firstObject.setDeveloperName(meta.getData().getDeveloper().getName());
-            firstObject.setVersionName(meta.getData().getFile().getVername());
-            firstObject.setDescription(meta.getData().getMedia().getDescription());
-
-            detailsDataset.add(new FragmentDetailViewModel(firstObject));
-
-            for (int i=0; i<versions.getList().size(); i++) {
-                DetailsLeanData item = new DetailsLeanData();
-                item.setIcon(meta.getData().getIcon());
-                item.setName(versions.getList().get(i).getName());
-                item.setDeveloperName(meta.getData().getDeveloper().getName());
-                item.setVersionName(versions.getList().get(i).getFile().getVername());
-                item.setDescription(meta.getData().getMedia().getDescription());
-
-                detailsDataset.add(new FragmentDetailViewModel(item));
-
-            }
-
-            return detailsDataset;
-        }
     }
 }
