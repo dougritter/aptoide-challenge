@@ -14,6 +14,7 @@ import com.ritterdouglas.aptoidechallenge.networking.app_detail.Meta;
 import com.ritterdouglas.aptoidechallenge.networking.app_detail.Versions;
 import com.ritterdouglas.aptoidechallenge.view_model.DetailsActivityViewModel;
 import com.ritterdouglas.aptoidechallenge.view_model.FragmentDetailViewModel;
+import com.ritterdouglas.aptoidechallenge.view_model.custom_data.DetailsLeanData;
 
 public class DetailFragment extends Fragment {
 
@@ -24,7 +25,7 @@ public class DetailFragment extends Fragment {
     private FragmentDetailViewModel mViewModel;
     public DetailFragment() {}
 
-    public static Fragment newInstance(int position, DetailsActivityViewModel.DetailsLeanData data) {
+    public static Fragment newInstance(int position, DetailsLeanData data) {
 
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
@@ -37,7 +38,7 @@ public class DetailFragment extends Fragment {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         int position = getArguments().getInt(POSITION, 0);
-        DetailsActivityViewModel.DetailsLeanData data = getArguments().getParcelable(DETAILS);
+        DetailsLeanData data = getArguments().getParcelable(DETAILS);
         mViewModel = new FragmentDetailViewModel(data);
 
     }

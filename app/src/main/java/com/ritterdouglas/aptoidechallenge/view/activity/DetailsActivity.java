@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.ritterdouglas.aptoidechallenge.R;
 import com.ritterdouglas.aptoidechallenge.adapter.ListAppsAdapter;
+import com.ritterdouglas.aptoidechallenge.adapter.SectionsPagerAdapter;
 import com.ritterdouglas.aptoidechallenge.databinding.ActivityDetailsBinding;
 import com.ritterdouglas.aptoidechallenge.networking.app_detail.AppDetailManager;
 import com.ritterdouglas.aptoidechallenge.networking.app_detail.DetailResponse;
@@ -16,6 +17,7 @@ import com.ritterdouglas.aptoidechallenge.networking.list_apps.List;
 import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsResponse;
 import com.ritterdouglas.aptoidechallenge.view_model.DetailsActivityViewModel;
 import com.ritterdouglas.aptoidechallenge.view_model.FragmentDetailViewModel;
+import com.ritterdouglas.aptoidechallenge.view_model.custom_data.DetailsLeanData;
 
 import java.util.ArrayList;
 
@@ -75,27 +77,47 @@ public class DetailsActivity extends BaseActivity {
             Log.e(TAG, "onNext");
 
             try {
-                Meta meta = response.body().getNodes().getMeta();
-                Versions versions = response.body().getNodes().getVersions();
+                java.util.List<FragmentDetailViewModel> dataset = getViewModelsDataset(response);
 
-                java.util.List<FragmentDetailViewModel> detailsDataset = new ArrayList<>();
+                if (dataset != null) {
+                    mBinding.viewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(), dataset));
 
-
-                Log.e(TAG, "LETS SEE");
-
+                }
 
             } catch (NullPointerException e) {
                 Log.e(TAG, e.getMessage());
             }
 
+        }
 
+        private java.util.List<FragmentDetailViewModel> getViewModelsDataset(Response<DetailResponse> response) {
+            Meta meta = response.body().getNodes().getMeta();
+            Versions versions = response.body().getNodes().getVersions();
 
+            java.util.List<FragmentDetailViewModel> detailsDataset = new ArrayList<>();
 
-            /*ListAppsResponse listAppsResponse = o.body();
-            java.util.List<List> retrievedList = listAppsResponse.getResponses().getListApps().getDatasets().getAll().getData().getList();
+            DetailsLeanData firstObject = new DetailsLeanData();
+            firstObject.setIcon(meta.getData().getIcon());
+            firstObject.setName(meta.getData().getName());
+            firstObject.setDeveloperName(meta.getData().getDeveloper().getName());
+            firstObject.setVersionName(meta.getData().getFile().getVername());
+            firstObject.setDescription(meta.getData().getMedia().getDescription());
 
-            mBinding.recyclerView.setAdapter(new ListAppsAdapter(retrievedList));*/
+            detailsDataset.add(new FragmentDetailViewModel(firstObject));
 
+            for (int i=0; i<versions.getList().size(); i++) {
+                DetailsLeanData item = new DetailsLeanData();
+                item.setIcon(meta.getData().getIcon());
+                item.setName(versions.getList().get(i).getName());
+                item.setDeveloperName(meta.getData().getDeveloper().getName());
+                item.setVersionName(versions.getList().get(i).getFile().getVername());
+                item.setDescription(meta.getData().getMedia().getDescription());
+
+                detailsDataset.add(new FragmentDetailViewModel(item));
+
+            }
+
+            return detailsDataset;
         }
     }
 }

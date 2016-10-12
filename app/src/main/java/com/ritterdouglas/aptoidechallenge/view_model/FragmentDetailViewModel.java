@@ -1,20 +1,20 @@
 package com.ritterdouglas.aptoidechallenge.view_model;
 
-import com.ritterdouglas.aptoidechallenge.networking.app_detail.DetailResponse;
+import com.ritterdouglas.aptoidechallenge.view_model.custom_data.DetailsLeanData;
 
 public class FragmentDetailViewModel {
 
-    private DetailsActivityViewModel.DetailsLeanData model;
+    private DetailsLeanData model;
 
-    public FragmentDetailViewModel(DetailsActivityViewModel.DetailsLeanData model) {
+    public FragmentDetailViewModel(DetailsLeanData model) {
         this.model = model;
     }
 
-    public DetailsActivityViewModel.DetailsLeanData getModel() {
+    public DetailsLeanData getModel() {
         return model;
     }
 
-    public void setModel(DetailsActivityViewModel.DetailsLeanData model) {
+    public void setModel(DetailsLeanData model) {
         this.model = model;
     }
 }
