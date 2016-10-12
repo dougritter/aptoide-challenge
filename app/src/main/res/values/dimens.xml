@@ -13,4 +13,7 @@
     <dimen name="card_image_size">70dp</dimen>
     <dimen name="card_image_margin">8dp</dimen>
 
+    <dimen name="card_detail_height">200dp</dimen>
+    <dimen name="card_detail_image_size">100dp</dimen>
+
 </resources>
