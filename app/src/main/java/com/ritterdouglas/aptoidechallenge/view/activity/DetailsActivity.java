@@ -32,6 +32,8 @@ public class DetailsActivity extends BaseActivity {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_details);
         mViewModel = new DetailsActivityViewModel(AppDetailManager.getInstance(this), getIntent());
 
+        mViewModel.getAppDetail(mViewModel.getAppID());
+
     }
 
     @Override protected void subscribeForNetworkRequests() {

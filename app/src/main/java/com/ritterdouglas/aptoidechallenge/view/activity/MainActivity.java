@@ -5,8 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.ritterdouglas.aptoidechallenge.R;
 import com.ritterdouglas.aptoidechallenge.adapter.ListAppsAdapter;
@@ -23,7 +21,6 @@ import retrofit2.Response;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 public class MainActivity extends BaseActivity {
