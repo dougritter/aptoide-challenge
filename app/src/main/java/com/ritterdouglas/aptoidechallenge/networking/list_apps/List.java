@@ -19,7 +19,7 @@ public class List {
     @SerializedName("icon")
     private String mIcon;
     @SerializedName("id")
-    private Long mId;
+    private int mId;
     @SerializedName("md5sum")
     private String mMd5sum;
     @SerializedName("modified")
@@ -85,11 +85,11 @@ public class List {
         mIcon = icon;
     }
 
-    public Long getId() {
+    public int getId() {
         return mId;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         mId = id;
     }
 

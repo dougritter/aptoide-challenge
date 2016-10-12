@@ -95,8 +95,8 @@ public class List {
         return mPackage;
     }
 
-    public void setPackage(String package) {
-        mPackage = package;
+    public void setPackage(String package_) {
+        mPackage = package_;
     }
 
     public Long getSize() {

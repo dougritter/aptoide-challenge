@@ -1,25 +1,23 @@
 package com.ritterdouglas.aptoidechallenge.adapter;
 
 import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.ritterdouglas.aptoidechallenge.R;
 import com.ritterdouglas.aptoidechallenge.databinding.AppItemBinding;
 import com.ritterdouglas.aptoidechallenge.networking.list_apps.List;
 import com.ritterdouglas.aptoidechallenge.view_model.AppItemViewModel;
 
+import rx.Observable;
+import rx.subjects.PublishSubject;
+
 public class ListAppsAdapter extends RecyclerView.Adapter<ListAppsAdapter.CustomViewHolder> {
     private java.util.List<List> mDataset;
-
-    public void setDataset(java.util.List<List> mDataset) {
-        this.mDataset = mDataset;
-    }
-
+    PublishSubject<AppItemViewModel> clickSubject;
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
         private AppItemBinding mViewDataBinding;
@@ -37,27 +35,30 @@ public class ListAppsAdapter extends RecyclerView.Adapter<ListAppsAdapter.Custom
 
     }
 
-    public ListAppsAdapter(java.util.List<List> myDataset) {
-        mDataset = myDataset;
+    public ListAppsAdapter(java.util.List<List> myDataset, PublishSubject<AppItemViewModel> clickSubject) {
+        this.clickSubject = clickSubject;
+        this.mDataset = myDataset;
     }
 
-    // Create new views (invoked by the layout manager)
-    @Override
-    public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    @Override public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         AppItemBinding appItemBinding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.app_item, viewGroup, false);
         return new CustomViewHolder(appItemBinding);
     }
 
-    @Override
-    public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
+    @Override public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
         AppItemBinding appItemBinding = customViewHolder.getViewDataBinding();
         appItemBinding.setViewModel(new AppItemViewModel(mDataset.get(i)));
+        customViewHolder.itemView.setOnClickListener(v -> clickSubject.onNext(appItemBinding.getViewModel()));
 
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
+    public Observable<AppItemViewModel> getPositionClicks(){
+        Log.e("PUBLISH SUBJECT", "app item view model ");
+        return clickSubject.asObservable();
+
+    }
+
+    @Override public int getItemCount() {
         return mDataset.size();
     }
 }

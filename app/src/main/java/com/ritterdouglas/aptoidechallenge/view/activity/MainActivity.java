@@ -1,9 +1,11 @@
 package com.ritterdouglas.aptoidechallenge.view.activity;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.ritterdouglas.aptoidechallenge.R;
@@ -11,6 +13,8 @@ import com.ritterdouglas.aptoidechallenge.adapter.ListAppsAdapter;
 import com.ritterdouglas.aptoidechallenge.databinding.ActivityMainBinding;
 import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsManager;
 import com.ritterdouglas.aptoidechallenge.networking.list_apps.ListAppsResponse;
+import com.ritterdouglas.aptoidechallenge.view_model.AppItemViewModel;
+import com.ritterdouglas.aptoidechallenge.view_model.DetailsActivityViewModel;
 import com.ritterdouglas.aptoidechallenge.view_model.MainActivityViewModel;
 
 import java.util.List;
@@ -19,6 +23,8 @@ import retrofit2.Response;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.subjects.PublishSubject;
 
 public class MainActivity extends BaseActivity {
 
@@ -40,6 +46,13 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    public void onItemClick(AppItemViewModel appItemViewModel) {
+        Intent intent = new Intent(this, DetailsActivity.class);
+        intent.putExtra(DetailsActivityViewModel.APP_ID, appItemViewModel.getModel().getId());
+        startActivity(intent);
+    }
+
+
     @Override protected void subscribeForNetworkRequests() {
         listAppsSubscription = mViewModel.getListAppsSubject()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -58,30 +71,38 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new ListAppsSubscriber());
     }
 
+
+    private final PublishSubject<AppItemViewModel> onClickSubject = PublishSubject.create();
+    private Subscription clickSubscription = onClickSubject.subscribe(viewModel -> onItemClick(viewModel));
+
     private class ListAppsSubscriber extends Subscriber<Response<ListAppsResponse>> {
         @Override public void onCompleted() {
             // hide progress
-            Log.e(TAG, "onCompleted - load recyclerview");
-            Toast.makeText(getApplicationContext(), "onCompleted", Toast.LENGTH_SHORT).show();
-
-            // load recyclerview here
+            Log.i(TAG, "onCompleted - load recyclerview");
 
         }
 
         @Override public void onError(Throwable e) {
             // hide progress
             reconnectWithNetworkRequests();
-
             // test if errors are instanceof exceptions of our API
+
         }
 
-        @Override public void onNext(Response<ListAppsResponse> o) {
-            Log.e(TAG, "onNext");
+        @Override public void onNext(Response<ListAppsResponse> object) {
+            Log.i(TAG, "onNext");
 
-            ListAppsResponse listAppsResponse = o.body();
-            List<com.ritterdouglas.aptoidechallenge.networking.list_apps.List> retrievedList = listAppsResponse.getResponses().getListApps().getDatasets().getAll().getData().getList();
+            try {
+                ListAppsResponse listAppsResponse = object.body();
+                List<com.ritterdouglas.aptoidechallenge.networking.list_apps.List> retrievedList
+                        = listAppsResponse.getResponses().getListApps().getDatasets().getAll().getData().getList();
 
-            mBinding.recyclerView.setAdapter(new ListAppsAdapter(retrievedList));
+                ListAppsAdapter listAppAdapter = new ListAppsAdapter(retrievedList, onClickSubject);
+                mBinding.recyclerView.setAdapter(listAppAdapter);
+
+            } catch (NullPointerException e) {
+                Log.e(TAG, e.getMessage());
+            }
 
         }
     }
